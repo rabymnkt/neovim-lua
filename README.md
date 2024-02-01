@@ -17,7 +17,7 @@ neovim の設定ファイルをLuaに移行する計画
 - [ ] [nvim-treesiter](https://github.com/nvim-treesitter/nvim-treesitter)
 - [ ] [aerial](https://github.com/stevearc/aerial.nvim)
 - [ ] [vim-sandwich](https://github.com/machakann/vim-sandwich)
-- [ ] [telescope](https://github.com/nvim-telescope/telescope.nvim)
+- [x] [telescope](https://github.com/nvim-telescope/telescope.nvim)
 - [ ] [vim-indent-guides](https://github.com/preservim/vim-indent-guides)
 - [ ] [markdown-preview](https://github.com/iamcco/markdown-preview.nvim)
 - [ ] [traces](https://github.com/markonm/traces.vim)
@@ -30,8 +30,15 @@ neovim の設定ファイルをLuaに移行する計画
 - [ ] [vimtex](https://github.com/lervag/vimtex)
 - [ ] [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 - [ ] [vim-startuptime](https://github.com/dstein64/vim-startuptime)
+- [ ] [obsidian](https://github.com/epwalsh/obsidian.nvim)
+- [ ] [trouble](https://github.com/folke/trouble.nvim)
+- [ ] [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim)
 
 まだ増えるかも...
+
+### 気になる
+
+- [dotfile](https://github.com/xero/dotfiles)
 
 ## 各種プラグインについて
 
