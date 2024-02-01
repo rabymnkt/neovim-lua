@@ -10,7 +10,7 @@ neovim の設定ファイルをLuaに移行する計画
 
 - [x] [kanagawa](https://github.com/rebelot/kanagawa.nvim)
 - [ ] [diffview](https://github.com/sindrets/diffview.nvim)
-- [ ] [neogit](https://github.com/NeogitOrg/neogit)
+- [x] [neogit](https://github.com/NeogitOrg/neogit)
 - [ ] [targets](https://github.com/wellle/targets.vim)
 - [ ] [barbar](https://github.com/romgrk/barbar.nvim)
 - [ ] [lualine](https://github.com/nvim-lualine/lualine.nvim)
@@ -31,7 +31,7 @@ neovim の設定ファイルをLuaに移行する計画
 - [ ] [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 - [ ] [vim-startuptime](https://github.com/dstein64/vim-startuptime)
 - [ ] [obsidian](https://github.com/epwalsh/obsidian.nvim)
-- [ ] [trouble](https://github.com/folke/trouble.nvim)
+- [x] [trouble](https://github.com/folke/trouble.nvim)
 - [ ] [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim)
 
 まだ増えるかも...
@@ -51,3 +51,4 @@ neovim の設定ファイルをLuaに移行する計画
 - [Vim Script→Luaへの変換](https://vonheikemen.github.io/devlog/tools/configuring-neovim-using-lua/)
 - [プラグインの選択先](https://github.com/rockerBOO/awesome-neovim)
 - [init.luaとかの配置など](https://homaju.hatenablog.com/entry/2022/06/10/081205)
+- [topic](https://github.com/topics/neovim-lua)
