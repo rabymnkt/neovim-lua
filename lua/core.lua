@@ -32,8 +32,8 @@ vim.opt.smartcase = true
 vim.opt.wrapscan = true
 
 -- カーソル移動
--- - 削除時の対象
-vim.opt.backspace = 'start', 'eol', 'indent'
+-- 削除時の対象
+-- vim.opt.backspace = 'start', 'eol', 'indent'
 
 -- ファイル環境
 -- -フォーマット
@@ -48,3 +48,16 @@ vim.opt.mouse = 'a'
 
 -- leader key 変更
 vim.g.mapleader = " "
+
+-- 空白のハイライト
+vim.api.nvim_create_augroup('extra-whitespace', {})
+vim.api.nvim_create_autocmd({'VimEnter', 'WinEnter'}, {
+    group = 'extra-whitespace',
+    pattern = {'*'},
+    command = [[call matchadd('ExtraWhitespace', '[\u200B\u3000]')]]
+})
+vim.api.nvim_create_autocmd({'ColorScheme'}, {
+    group = 'extra-whitespace',
+    pattern = {'*'},
+    command = [[highlight default ExtraWhitespace ctermbg=202 ctermfg=202 guibg=salmon]]
+})
