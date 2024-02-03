@@ -1,4 +1,4 @@
-return{
+return {
     'rebelot/kanagawa.nvim',
     enabled = false,
     event = "VimEnter",

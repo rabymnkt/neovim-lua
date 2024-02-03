@@ -1,5 +1,5 @@
 -- terminalmodeから抜ける
-vim.keymap.set('t', '<ESC>','<C-\\><C-n>')
+vim.keymap.set('t', '<ESC>', '<C-\\><C-n>')
 
 -- core
 vim.keymap.set('n', '<ESC><ESC>', ':<C-u>nohlsearch<CR><Esc>')
@@ -11,6 +11,7 @@ vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set('n', '<leader>f/', builtin.current_buffer_fuzzy_find, {})
+vim.keymap.set('n', '<leader>fn', ":Noice telescope<CR>")
 -- trouble.lua
 vim.keymap.set("n", "<leader>xx", function() require("trouble").toggle() end)
 vim.keymap.set("n", "<leader>xw", function() require("trouble").toggle("workspace_diagnostics") end)
@@ -66,6 +67,10 @@ map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
 
 --- diffview
 vim.keymap.set('n', '<leader>gd', ':DiffviewFileHistory<CR>')
+
+--- neogit
+vim.keymap.set('n', '<leader>gn', ':Neogit<CR>')
+vim.keymap.set('n', '<leader>gc', ':Neogit commit<CR>')
 
 --- markdown preview
 vim.keymap.set('n', '<C-p><C-p>', ':MarkdownPreview<CR>')
