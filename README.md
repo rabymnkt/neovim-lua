@@ -24,6 +24,9 @@ neovim の設定ファイルをLuaに移行する計画
 - [x] [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim)
 - [x] [noice](https://github.com/folke/noice.nvim)
 - [x] [fugitive](https://github.com/tpope/vim-fugitive)
+- [x] [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
+- [x] [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+- [x] [lexima](https://github.com/cohama/lexima.vim)
 
 ### 気になる・保留
 
@@ -34,10 +37,7 @@ neovim の設定ファイルをLuaに移行する計画
 - [nvim-dap](https://github.com/mfussenegger/nvim-dap)
 - [aerial](https://github.com/stevearc/aerial.nvim)
 - [toggleterm](https://github.com/akinsho/toggleterm.nvim)
-- [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 - [skkeleton](https://github.com/vim-skk/skkeleton)
-- [vimtex](https://github.com/lervag/vimtex)
-- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 - [vim-startuptime](https://github.com/dstein64/vim-startuptime)
 - [obsidian](https://github.com/epwalsh/obsidian.nvim)
 
@@ -45,7 +45,7 @@ neovim の設定ファイルをLuaに移行する計画
 
 ### kanagawa
 
-~~カラースキームとしてとりあえず選択~~  
+~~カラースキームとしてとりあえず選択~~
 最終的にtokyonightになった
 
 ## 参考

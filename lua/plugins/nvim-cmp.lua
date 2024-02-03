@@ -4,6 +4,8 @@ local M = {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-cmdline",
         "hrsh7th/cmp-path",
+        "SirVer/ultisnips",
+        "quangnguyen30192/cmp-nvim-ultisnips",
     },
 }
 
@@ -13,6 +15,16 @@ M.config = function()
     vim.opt.completeopt = { "menu", "menuone", "noselect" }
 
     cmp.setup({
+        snippet = {
+            -- REQUIRED - you must specify a snippet engine
+            expand = function(args)
+                vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+            end,
+        },
+        window = {
+            -- completion = cmp.config.window.bordered(),
+            -- documentation = cmp.config.window.bordered(),
+        },
         mapping = cmp.mapping.preset.insert({
             ['<C-b>'] = cmp.mapping.scroll_docs(-4),
             ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -21,10 +33,7 @@ M.config = function()
         }),
         sources = cmp.config.sources({
             { name = 'nvim_lsp' },
-            { name = 'vsnip' }, -- For vsnip users.
-            -- { name = 'luasnip' }, -- For luasnip users.
-            -- { name = 'ultisnips' }, -- For ultisnips users.
-            -- { name = 'snippy' }, -- For snippy users.
+            { name = 'ultisnips' }, -- For ultisnips users.
         }, {
             { name = 'buffer' },
         })

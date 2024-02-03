@@ -765,6 +765,7 @@ require("conform").setup({
         -- Conform will run multiple formatters sequentially
         c = { "clang-format" },
         latex = { "vale" },
+        markdown = { "prettier" },
         -- Use a sub-list to run only the first available formatter
         --javascript = { { "prettierd", "prettier" } },
         -- You can use a function here to determine the formatters dynamically
