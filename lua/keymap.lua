@@ -69,7 +69,6 @@ map('n', '<Space>bw', '<Cmd>BufferOrderByWindowNumber<CR>', opts)
 vim.keymap.set('n', '<leader>gd', ':DiffviewFileHistory<CR>')
 
 --- neogit
-vim.keymap.set('n', '<leader>gc', ':Neogit commit<CR>')
 vim.keymap.set('n', '<leader>gs', ':Neogit kind=split<CR>')
 vim.keymap.set('n', '<leader>gvs', ':Neogit kind=vsplit<CR>')
 
