@@ -74,3 +74,6 @@ vim.keymap.set('n', '<leader>gvs', ':Neogit kind=vsplit<CR>')
 
 --- markdown preview
 vim.keymap.set('n', '<C-p><C-p>', ':MarkdownPreview<CR>')
+
+--- toggleterm
+vim.keymap.set('n', '<leader>tt', ':ToggleTerm direction=vertical size=60<CR>')
