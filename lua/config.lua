@@ -1,191 +1,350 @@
 ---
---- bubbles
+--- eviline
 ---
--- Bubbles config for lualine
--- Author: lokesh-krishna
--- MIT license, see LICENSE for more details.
+-- Eviline config for lualine
+-- Author: shadmansaleh
+-- Credit: glepnir
+local lualine = require("lualine")
 
+-- Color table for highlights
 -- stylua: ignore
 local colors = {
-    blue   = '#80a0ff',
-    cyan   = '#79dac8',
-    black  = '#080808',
-    white  = '#c6c6c6',
-    red    = '#ff5189',
-    violet = '#d183e8',
-    grey   = '#303030',
+  bg       = '#202328',
+  fg       = '#bbc2cf',
+  yellow   = '#ECBE7B',
+  cyan     = '#008080',
+  darkblue = '#081633',
+  green    = '#98be65',
+  orange   = '#FF8800',
+  violet   = '#a9a1e1',
+  magenta  = '#c678dd',
+  blue     = '#51afef',
+  red      = '#ec5f67',
 }
 
-local bubbles_theme = {
-    normal = {
-        a = { fg = colors.black, bg = colors.violet },
-        b = { fg = colors.white, bg = colors.grey },
-        c = { fg = colors.black, bg = colors.black },
-    },
-
-    insert = { a = { fg = colors.black, bg = colors.blue } },
-    visual = { a = { fg = colors.black, bg = colors.cyan } },
-    replace = { a = { fg = colors.black, bg = colors.red } },
-
-    inactive = {
-        a = { fg = colors.white, bg = colors.black },
-        b = { fg = colors.white, bg = colors.black },
-        c = { fg = colors.black, bg = colors.black },
-    },
+local conditions = {
+    buffer_not_empty = function()
+        return vim.fn.empty(vim.fn.expand("%:t")) ~= 1
+    end,
+    hide_in_width = function()
+        return vim.fn.winwidth(0) > 80
+    end,
+    check_git_workspace = function()
+        local filepath = vim.fn.expand("%:p:h")
+        local gitdir = vim.fn.finddir(".git", filepath .. ";")
+        return gitdir and #gitdir > 0 and #gitdir < #filepath
+    end,
 }
 
-require("lualine").setup({
+-- Config
+local config = {
     options = {
-        theme = bubbles_theme,
-        component_separators = "|",
-        section_separators = { left = "", right = "" },
+        -- Disable sections and component separators
+        component_separators = "",
+        section_separators = "",
+        theme = {
+            -- We are going to use lualine_c an lualine_x as left and
+            -- right section. Both are highlighted by c theme .  So we
+            -- are just setting default looks o statusline
+            normal = { c = { fg = colors.fg, bg = colors.bg } },
+            inactive = { c = { fg = colors.fg, bg = colors.bg } },
+        },
     },
     sections = {
-        lualine_a = {
-            { "mode", separator = { left = "" }, right_padding = 2 },
-        },
-        lualine_b = { "filename", "branch" },
-        lualine_c = { "fileformat" },
-        lualine_x = {},
-        lualine_y = { "o:encoding", "filetype", "progress" },
-        lualine_z = {
-            { "location", separator = { right = "" }, left_padding = 2 },
-        },
-    },
-    inactive_sections = {
-        lualine_a = { "filename" },
+        -- these are to remove the defaults
+        lualine_a = {},
         lualine_b = {},
+        lualine_y = {},
+        lualine_z = {},
+        -- These will be filled later
         lualine_c = {},
         lualine_x = {},
-        lualine_y = {},
-        lualine_z = { "location" },
     },
-    tabline = {},
-    extensions = {},
+    inactive_sections = {
+        -- these are to remove the defaults
+        lualine_a = {},
+        lualine_b = {},
+        lualine_y = {},
+        lualine_z = {},
+        lualine_c = {},
+        lualine_x = {},
+    },
+}
+
+-- Inserts a component in lualine_c at left section
+local function ins_left(component)
+    table.insert(config.sections.lualine_c, component)
+end
+
+-- Inserts a component in lualine_x at right section
+local function ins_right(component)
+    table.insert(config.sections.lualine_x, component)
+end
+
+ins_left({
+    function()
+        return "▊"
+    end,
+    color = { fg = colors.blue }, -- Sets highlighting of component
+    padding = { left = 0, right = 1 }, -- We don't need space before this
 })
+
+ins_left({
+    -- mode component
+    function()
+        return ""
+    end,
+    color = function()
+        -- auto change color according to neovims mode
+        local mode_color = {
+            n = colors.red,
+            i = colors.green,
+            v = colors.blue,
+            [""] = colors.blue,
+            V = colors.blue,
+            c = colors.magenta,
+            no = colors.red,
+            s = colors.orange,
+            S = colors.orange,
+            [""] = colors.orange,
+            ic = colors.yellow,
+            R = colors.violet,
+            Rv = colors.violet,
+            cv = colors.red,
+            ce = colors.red,
+            r = colors.cyan,
+            rm = colors.cyan,
+            ["r?"] = colors.cyan,
+            ["!"] = colors.red,
+            t = colors.red,
+        }
+        return { fg = mode_color[vim.fn.mode()] }
+    end,
+    padding = { right = 1 },
+})
+
+ins_left({
+    -- filesize component
+    "filesize",
+    cond = conditions.buffer_not_empty,
+})
+
+ins_left({
+    "filename",
+    cond = conditions.buffer_not_empty,
+    color = { fg = colors.magenta, gui = "bold" },
+})
+
+ins_left({ "location" })
+
+ins_left({ "progress", color = { fg = colors.fg, gui = "bold" } })
+
+ins_left({
+    "diagnostics",
+    sources = { "nvim_diagnostic" },
+    symbols = { error = " ", warn = " ", info = " " },
+    diagnostics_color = {
+        color_error = { fg = colors.red },
+        color_warn = { fg = colors.yellow },
+        color_info = { fg = colors.cyan },
+    },
+})
+
+-- Insert mid section. You can make any number of sections in neovim :)
+-- for lualine it's any number greater then 2
+ins_left({
+    function()
+        return "%="
+    end,
+})
+
+ins_left({
+    -- Lsp server name .
+    function()
+        local msg = "No Active Lsp"
+        local buf_ft = vim.api.nvim_buf_get_option(0, "filetype")
+        local clients = vim.lsp.get_active_clients()
+        if next(clients) == nil then
+            return msg
+        end
+        for _, client in ipairs(clients) do
+            local filetypes = client.config.filetypes
+            if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
+                return client.name
+            end
+        end
+        return msg
+    end,
+    icon = " LSP:",
+    color = { fg = "#ffffff", gui = "bold" },
+})
+
+-- Add components to right sections
+ins_right({
+    "o:encoding", -- option component same as &encoding in viml
+    fmt = string.upper, -- I'm not sure why it's upper case either ;)
+    cond = conditions.hide_in_width,
+    color = { fg = colors.green, gui = "bold" },
+})
+
+ins_right({
+    "fileformat",
+    fmt = string.upper,
+    icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
+    color = { fg = colors.green, gui = "bold" },
+})
+
+ins_right({
+    "branch",
+    icon = "",
+    color = { fg = colors.violet, gui = "bold" },
+})
+
+ins_right({
+    "diff",
+    -- Is it me or the symbol for modified us really weird
+    symbols = { added = " ", modified = "󰝤 ", removed = " " },
+    diff_color = {
+        added = { fg = colors.green },
+        modified = { fg = colors.orange },
+        removed = { fg = colors.red },
+    },
+    cond = conditions.hide_in_width,
+})
+
+ins_right({
+    function()
+        return "▊"
+    end,
+    color = { fg = colors.blue },
+    padding = { left = 1 },
+})
+
+-- Now don't forget to initialize lualine
+lualine.setup(config)
 
 ---
 --- barbar
 ---
 vim.g.barbar_auto_setup = false -- disable auto-setup
 
-require('barbar').setup {
-  -- Automatically hide the tabline when there are this many buffers left.
-  -- Set to any value >=0 to enable.
-  auto_hide = false,
+require("barbar").setup({
+    -- Automatically hide the tabline when there are this many buffers left.
+    -- Set to any value >=0 to enable.
+    auto_hide = false,
 
-  -- Enables/disable clickable tabs
-  --  - left-click: go to buffer
-  --  - middle-click: delete buffer
-  clickable = true,
+    -- Enables/disable clickable tabs
+    --  - left-click: go to buffer
+    --  - middle-click: delete buffer
+    clickable = true,
 
-  -- A buffer to this direction will be focused (if it exists) when closing the current buffer.
-  -- Valid options are 'left' (the default), 'previous', and 'right'
-  focus_on_close = 'left',
+    -- A buffer to this direction will be focused (if it exists) when closing the current buffer.
+    -- Valid options are 'left' (the default), 'previous', and 'right'
+    focus_on_close = "left",
 
-  -- Hide inactive buffers and file extensions. Other options are `alternate`, `current`, and `visible`.
-  hide = {extensions = true, inactive = false},
+    -- Hide inactive buffers and file extensions. Other options are `alternate`, `current`, and `visible`.
+    hide = { extensions = true, inactive = false },
 
-  -- Disable highlighting alternate buffers
-  highlight_alternate = false,
+    -- Disable highlighting alternate buffers
+    highlight_alternate = false,
 
-  -- Disable highlighting file icons in inactive buffers
-  highlight_inactive_file_icons = false,
+    -- Disable highlighting file icons in inactive buffers
+    highlight_inactive_file_icons = false,
 
-  -- Enable highlighting visible buffers
-  highlight_visible = true,
+    -- Enable highlighting visible buffers
+    highlight_visible = true,
 
-  icons = {
-    -- Configure the base icons on the bufferline.
-    -- Valid options to display the buffer index and -number are `true`, 'superscript' and 'subscript'
-    buffer_index = false,
-    buffer_number = false,
-    button = '',
-    -- Enables / disables diagnostic symbols
-    diagnostics = {
-      [vim.diagnostic.severity.ERROR] = {enabled = true, icon = 'ﬀ'},
-      [vim.diagnostic.severity.WARN] = {enabled = false},
-      [vim.diagnostic.severity.INFO] = {enabled = false},
-      [vim.diagnostic.severity.HINT] = {enabled = true},
+    icons = {
+        -- Configure the base icons on the bufferline.
+        -- Valid options to display the buffer index and -number are `true`, 'superscript' and 'subscript'
+        buffer_index = false,
+        buffer_number = false,
+        button = "",
+        -- Enables / disables diagnostic symbols
+        diagnostics = {
+            [vim.diagnostic.severity.ERROR] = { enabled = true, icon = "ﬀ" },
+            [vim.diagnostic.severity.WARN] = { enabled = false },
+            [vim.diagnostic.severity.INFO] = { enabled = false },
+            [vim.diagnostic.severity.HINT] = { enabled = true },
+        },
+        gitsigns = {
+            added = { enabled = true, icon = "+" },
+            changed = { enabled = true, icon = "~" },
+            deleted = { enabled = true, icon = "-" },
+        },
+        filetype = {
+            -- Sets the icon's highlight group.
+            -- If false, will use nvim-web-devicons colors
+            custom_colors = false,
+
+            -- Requires `nvim-web-devicons` if `true`
+            enabled = true,
+        },
+        separator = { left = "▎", right = "" },
+
+        -- If true, add an additional separator at the end of the buffer list
+        separator_at_end = true,
+
+        -- Configure the icons on the bufferline when modified or pinned.
+        -- Supports all the base icon options.
+        modified = { button = "●" },
+        pinned = { button = "", filename = true },
+
+        -- Use a preconfigured buffer appearance— can be 'default', 'powerline', or 'slanted'
+        preset = "default",
+
+        -- Configure the icons on the bufferline based on the visibility of a buffer.
+        -- Supports all the base icon options, plus `modified` and `pinned`.
+        alternate = { filetype = { enabled = false } },
+        current = { buffer_index = true },
+        inactive = { button = "×" },
+        visible = { modified = { buffer_number = false } },
     },
-    gitsigns = {
-      added = {enabled = true, icon = '+'},
-      changed = {enabled = true, icon = '~'},
-      deleted = {enabled = true, icon = '-'},
+
+    -- If true, new buffers will be inserted at the start/end of the list.
+    -- Default is to insert after current buffer.
+    insert_at_end = false,
+    insert_at_start = false,
+
+    -- Sets the maximum padding width with which to surround each tab
+    maximum_padding = 1,
+
+    -- Sets the minimum padding width with which to surround each tab
+    minimum_padding = 1,
+
+    -- Sets the maximum buffer name length.
+    maximum_length = 30,
+
+    -- Sets the minimum buffer name length.
+    minimum_length = 0,
+
+    -- If set, the letters for each buffer in buffer-pick mode will be
+    -- assigned based on their name. Otherwise or in case all letters are
+    -- already assigned, the behavior is to assign letters in order of
+    -- usability (see order below)
+    semantic_letters = true,
+
+    -- Set the filetypes which barbar will offset itself for
+    sidebar_filetypes = {
+        -- Use the default values: {event = 'BufWinLeave', text = nil}
+        NvimTree = true,
+        -- Or, specify the text used for the offset:
+        undotree = { text = "undotree" },
+        -- Or, specify the event which the sidebar executes when leaving:
+        ["neo-tree"] = { event = "BufWipeout" },
+        -- Or, specify both
+        Outline = { event = "BufWinLeave", text = "symbols-outline" },
     },
-    filetype = {
-      -- Sets the icon's highlight group.
-      -- If false, will use nvim-web-devicons colors
-      custom_colors = false,
 
-      -- Requires `nvim-web-devicons` if `true`
-      enabled = true,
-    },
-    separator = {left = '▎', right = ''},
+    -- New buffer letters are assigned in this order. This order is
+    -- optimal for the qwerty keyboard layout but might need adjustment
+    -- for other layouts.
+    letters = "asdfjkl;ghnmxcvbziowerutyqpASDFJKLGHNMXCVBZIOWERUTYQP",
 
-    -- If true, add an additional separator at the end of the buffer list
-    separator_at_end = true,
-
-    -- Configure the icons on the bufferline when modified or pinned.
-    -- Supports all the base icon options.
-    modified = {button = '●'},
-    pinned = {button = '', filename = true},
-
-    -- Use a preconfigured buffer appearance— can be 'default', 'powerline', or 'slanted'
-    preset = 'default',
-
-    -- Configure the icons on the bufferline based on the visibility of a buffer.
-    -- Supports all the base icon options, plus `modified` and `pinned`.
-    alternate = {filetype = {enabled = false}},
-    current = {buffer_index = true},
-    inactive = {button = '×'},
-    visible = {modified = {buffer_number = false}},
-  },
-
-  -- If true, new buffers will be inserted at the start/end of the list.
-  -- Default is to insert after current buffer.
-  insert_at_end = false,
-  insert_at_start = false,
-
-  -- Sets the maximum padding width with which to surround each tab
-  maximum_padding = 1,
-
-  -- Sets the minimum padding width with which to surround each tab
-  minimum_padding = 1,
-
-  -- Sets the maximum buffer name length.
-  maximum_length = 30,
-
-  -- Sets the minimum buffer name length.
-  minimum_length = 0,
-
-  -- If set, the letters for each buffer in buffer-pick mode will be
-  -- assigned based on their name. Otherwise or in case all letters are
-  -- already assigned, the behavior is to assign letters in order of
-  -- usability (see order below)
-  semantic_letters = true,
-
-  -- Set the filetypes which barbar will offset itself for
-  sidebar_filetypes = {
-    -- Use the default values: {event = 'BufWinLeave', text = nil}
-    NvimTree = true,
-    -- Or, specify the text used for the offset:
-    undotree = {text = 'undotree'},
-    -- Or, specify the event which the sidebar executes when leaving:
-    ['neo-tree'] = {event = 'BufWipeout'},
-    -- Or, specify both
-    Outline = {event = 'BufWinLeave', text = 'symbols-outline'},
-  },
-
-  -- New buffer letters are assigned in this order. This order is
-  -- optimal for the qwerty keyboard layout but might need adjustment
-  -- for other layouts.
-  letters = 'asdfjkl;ghnmxcvbziowerutyqpASDFJKLGHNMXCVBZIOWERUTYQP',
-
-  -- Sets the name of unnamed buffers. By default format is "[Buffer X]"
-  -- where X is the buffer number. But only a static string is accepted here.
-  no_name_title = nil,
-}
+    -- Sets the name of unnamed buffers. By default format is "[Buffer X]"
+    -- where X is the buffer number. But only a static string is accepted here.
+    no_name_title = nil,
+})
 
 ---
 --- neo-tree
@@ -200,10 +359,10 @@ require("neo-tree").setup({
     popup_border_style = "rounded",
     enable_git_status = true,
     enable_diagnostics = true,
-    enable_normal_mode_for_inputs = false,                             -- Enable normal mode for input dialogs.
+    enable_normal_mode_for_inputs = false, -- Enable normal mode for input dialogs.
     open_files_do_not_replace_types = { "terminal", "trouble", "qf" }, -- when opening files, do not use windows containing these filetypes or buftypes
-    sort_case_insensitive = false,                                     -- used when sorting files and directories in the tree
-    sort_function = nil,                                               -- use a custom function for sorting files and directories in the tree
+    sort_case_insensitive = false, -- used when sorting files and directories in the tree
+    sort_function = nil, -- use a custom function for sorting files and directories in the tree
     -- sort_function = function (a,b)
     --       if a.type == b.type then
     --           return a.path > b.path
@@ -374,11 +533,11 @@ require("neo-tree").setup({
             },
         },
         follow_current_file = {
-            enabled = false,                    -- This will find and focus the file in the active buffer every time
+            enabled = false, -- This will find and focus the file in the active buffer every time
             --               -- the current file is changed while the tree is open.
-            leave_dirs_open = false,            -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
+            leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
         },
-        group_empty_dirs = false,               -- when true, empty folders will be grouped together
+        group_empty_dirs = false, -- when true, empty folders will be grouped together
         hijack_netrw_behavior = "open_default", -- netrw disabled, opening a directory opens neo-tree
         -- in whatever position is specified in window.position
         -- "open_current",  -- netrw disabled, opening a directory opens within the
@@ -420,11 +579,11 @@ require("neo-tree").setup({
     },
     buffers = {
         follow_current_file = {
-            enabled = true,          -- This will find and focus the file in the active buffer every time
+            enabled = true, -- This will find and focus the file in the active buffer every time
             --              -- the current file is changed while the tree is open.
             leave_dirs_open = false, -- `false` closes auto expanded dirs, such as with `:Neotree reveal`
         },
-        group_empty_dirs = true,     -- when true, empty folders will be grouped together
+        group_empty_dirs = true, -- when true, empty folders will be grouped together
         show_unloaded = true,
         window = {
             mappings = {
@@ -472,9 +631,9 @@ vim.cmd([[nnoremap <C-d> :Neotree toggle=true<cr>]])
 require("tokyonight").setup({
     -- your configuration comes here
     -- or leave it empty to use the default settings
-    style = "Night",        -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
-    light_style = "day",    -- The theme is used when the background is set to light
-    transparent = false,    -- Enable this to disable setting the background color
+    style = "Night", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
+    light_style = "day", -- The theme is used when the background is set to light
+    transparent = false, -- Enable this to disable setting the background color
     terminal_colors = true, -- Configure the colors used when opening a `:terminal` in [Neovim](https://github.com/neovim/neovim)
     styles = {
         -- Style to be applied to different syntax groups
@@ -484,14 +643,14 @@ require("tokyonight").setup({
         functions = {},
         variables = {},
         -- Background styles. Can be "dark", "transparent" or "normal"
-        sidebars = "dark",            -- style for sidebars, see below
-        floats = "dark",              -- style for floating windows
+        sidebars = "dark", -- style for sidebars, see below
+        floats = "dark", -- style for floating windows
     },
-    sidebars = { "qf", "help" },      -- Set a darker background on sidebar-like windows. For example: `["qf", "vista_kind", "terminal", "packer"]`
-    day_brightness = 0.3,             -- Adjusts the brightness of the colors of the **Day** style. Number between 0 and 1, from dull to vibrant colors
+    sidebars = { "qf", "help" }, -- Set a darker background on sidebar-like windows. For example: `["qf", "vista_kind", "terminal", "packer"]`
+    day_brightness = 0.3, -- Adjusts the brightness of the colors of the **Day** style. Number between 0 and 1, from dull to vibrant colors
     hide_inactive_statusline = false, -- Enabling this option, will hide inactive statuslines and replace them with a thin border instead. Should work with the standard **StatusLine** and **LuaLine**.
-    dim_inactive = false,             -- dims inactive windows
-    lualine_bold = false,             -- When `true`, section headers in the lualine theme will be bold
+    dim_inactive = false, -- dims inactive windows
+    lualine_bold = false, -- When `true`, section headers in the lualine theme will be bold
 
     --- You can override specific color groups to use other groups or a hex color
     --- function will be called with a ColorScheme table
@@ -535,9 +694,9 @@ require("mason-lspconfig").setup_handlers({
 require("telescope").load_extension("noice")
 require("noice").setup({
     cmdline = {
-        enabled = true,         -- enables the Noice cmdline UI
+        enabled = true, -- enables the Noice cmdline UI
         view = "cmdline_popup", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
-        opts = {},              -- global options for the cmdline. See section on views
+        opts = {}, -- global options for the cmdline. See section on views
         ---@type table<string, CmdlineFormat>
         format = {
             -- conceal: (default=true) This will hide the text in the cmdline that matches the pattern.
@@ -558,15 +717,15 @@ require("noice").setup({
     messages = {
         -- NOTE: If you enable messages, then the cmdline is enabled automatically.
         -- This is a current Neovim limitation.
-        enabled = true,              -- enables the Noice messages UI
-        view = "notify",             -- default view for messages
-        view_error = "notify",       -- view for errors
-        view_warn = "notify",        -- view for warnings
-        view_history = "messages",   -- view for :messages
+        enabled = true, -- enables the Noice messages UI
+        view = "notify", -- default view for messages
+        view_error = "notify", -- view for errors
+        view_warn = "notify", -- view for warnings
+        view_history = "messages", -- view for :messages
         view_search = "virtualtext", -- view for search count messages. Set to `false` to disable
     },
     popupmenu = {
-        enabled = true,  -- enables the Noice popupmenu UI
+        enabled = true, -- enables the Noice popupmenu UI
         ---@type 'nui'|'cmp'
         backend = "nui", -- backend to use to show regular cmdline completions
         ---@type NoicePopupmenuItemKind|false
@@ -593,7 +752,7 @@ require("noice").setup({
                     { error = true },
                     { warning = true },
                     { event = "msg_show", kind = { "" } },
-                    { event = "lsp",      kind = "message" },
+                    { event = "lsp", kind = "message" },
                 },
             },
         },
@@ -607,7 +766,7 @@ require("noice").setup({
                     { error = true },
                     { warning = true },
                     { event = "msg_show", kind = { "" } },
-                    { event = "lsp",      kind = "message" },
+                    { event = "lsp", kind = "message" },
                 },
             },
             filter_opts = { count = 1 },
@@ -653,9 +812,9 @@ require("noice").setup({
         hover = {
             enabled = true,
             silent = false, -- set to true to not show a message if hover is not available
-            view = nil,     -- when nil, use defaults from documentation
+            view = nil, -- when nil, use defaults from documentation
             ---@type NoiceViewOptions
-            opts = {},      -- merged with defaults from documentation
+            opts = {}, -- merged with defaults from documentation
         },
         signature = {
             enabled = true,
@@ -663,11 +822,11 @@ require("noice").setup({
                 enabled = true,
                 trigger = true, -- Automatically show signature help when typing a trigger character from the LSP
                 luasnip = true, -- Will open signature help when jumping to Luasnip insert nodes
-                throttle = 50,  -- Debounce lsp signature help request by 50ms
+                throttle = 50, -- Debounce lsp signature help request by 50ms
             },
-            view = nil,         -- when nil, use defaults from documentation
+            view = nil, -- when nil, use defaults from documentation
             ---@type NoiceViewOptions
-            opts = {},          -- merged with defaults from documentation
+            opts = {}, -- merged with defaults from documentation
         },
         message = {
             -- Messages shown by lsp servers
@@ -690,7 +849,7 @@ require("noice").setup({
     },
     markdown = {
         hover = {
-            ["|(%S-)|"] = vim.cmd.help,                       -- vim help links
+            ["|(%S-)|"] = vim.cmd.help, -- vim help links
             ["%[.-%]%((%S-)%)"] = require("noice.util").open, -- markdown links
         },
         highlights = {
@@ -715,13 +874,13 @@ require("noice").setup({
     presets = {
         -- you can enable a preset by setting it to true, or a table that will override the preset config
         -- you can also add custom presets that you can enable/disable with enabled=true
-        bottom_search = true,         -- use a classic bottom cmdline for search
-        command_palette = true,       -- position the cmdline and popupmenu together
+        bottom_search = true, -- use a classic bottom cmdline for search
+        command_palette = true, -- position the cmdline and popupmenu together
         long_message_to_split = true, -- long messages will be sent to a split
-        inc_rename = false,           -- enables an input dialog for inc-rename.nvim
-        lsp_doc_border = false,       -- add a border to hover docs and signature help
+        inc_rename = false, -- enables an input dialog for inc-rename.nvim
+        lsp_doc_border = false, -- add a border to hover docs and signature help
     },
-    throttle = 1000 / 30,             -- how frequently does Noice need to check for ui updates? This has no effect when in blocking mode.
+    throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates? This has no effect when in blocking mode.
     ---@type NoiceConfigViews
     views = {}, ---@see section on views
     ---@type NoiceRouteConfig[]
@@ -836,3 +995,16 @@ require("conform").formatters_by_ft.lua = { "stylua" }
 require("conform").formatters.my_formatter = {
     command = "my_cmd",
 }
+---
+--- toggleterm
+---
+require("toggleterm").setup({
+    open_mapping = [[<c-\>]],
+    hide_numbers = true, -- hide the number column in toggleterm buffers
+    autochdir = false, -- when neovim changes it current directory the terminal will change it's own when next it's opened
+    start_in_insert = true,
+    close_on_exit = true, -- close the terminal window when the process exits
+    -- Change the default shell. Can be a string or a function returning a string
+    --shell = vim.o.shell,
+    auto_scroll = true, -- automatically scroll to the bottom on terminal output
+})

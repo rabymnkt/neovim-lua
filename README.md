@@ -27,6 +27,8 @@ neovim の設定ファイルをLuaに移行する計画
 - [x] [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 - [x] [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
 - [x] [lexima](https://github.com/cohama/lexima.vim)
+- [x] [Comment](https://github.com/numToStr/Comment.nvim)
+- [x] [toggleterm](https://github.com/akinsho/toggleterm.nvim)
 
 ### 気になる・保留
 
@@ -36,7 +38,6 @@ neovim の設定ファイルをLuaに移行する計画
 - [traces](https://github.com/markonm/traces.vim)
 - [nvim-dap](https://github.com/mfussenegger/nvim-dap)
 - [aerial](https://github.com/stevearc/aerial.nvim)
-- [toggleterm](https://github.com/akinsho/toggleterm.nvim)
 - [skkeleton](https://github.com/vim-skk/skkeleton)
 - [vim-startuptime](https://github.com/dstein64/vim-startuptime)
 - [obsidian](https://github.com/epwalsh/obsidian.nvim)
