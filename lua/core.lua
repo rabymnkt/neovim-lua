@@ -36,7 +36,7 @@ vim.opt.wrapscan = true
 
 -- ファイル環境
 -- -フォーマット
-vim.opt.fileformats = "dos", "unix", "mac"
+vim.opt.fileformats = "unix", "mac", "dos"
 
 -- クリップボード連携
 --vim.opt.clipboard:append({unnamedeplus = true})
